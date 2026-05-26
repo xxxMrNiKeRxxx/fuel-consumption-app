@@ -1,0 +1,76 @@
+.mode-card__image-wrapper {
+    position: relative;
+    height: 200px;
+    background: #f5f5f5;
+}
+
+.mode-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mode-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+    border-radius: 4px;
+}
+
+.mode-badge--city { background: #1976d2; }
+.mode-badge--highway { background: #388e3c; }
+.mode-badge--mixed { background: #f57c00; }
+
+.mode-card__content {
+    padding: 16px;
+}
+
+.mode-card__title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    color: #000;
+}
+
+.mode-card__specs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.spec-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.spec-icon {
+    font-size: 14px;
+}
+
+.spec-value {
+    font-weight: 600;
+    color: #000;
+}
+
+.mode-card__btn {
+    width: 100%;
+    padding: 12px;
+    background: #DB2B36;
+    color: white;
+    border: none;
+    border-radius: 0 0 8px 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.mode-card__btn:hover {
+    background: #b91d19;
+}

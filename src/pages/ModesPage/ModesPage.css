@@ -1,0 +1,470 @@
+/* src/pages/ModesPage/ModesPage.css */
+
+/* === Чёрная панель поиска - ВСЁ В ОДНУ СТРОКУ === */
+.toolbar {
+  background: #000;
+  padding: 15px 0;
+}
+
+.toolbar .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+/* 🔹 Принудительно выстраиваем поиск в одну строку */
+.toolbar .search-form,
+.toolbar form,
+.toolbar div[class*="search"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+  flex: 1;
+  max-width: 600px;
+}
+
+.toolbar input[type="text"],
+.toolbar input[type="search"],
+.toolbar .search-input {
+  flex: 1 !important;
+  padding: 12px 16px !important;
+  border: none !important;
+  background: white !important;
+  color: #333 !important;
+  font-size: 14px !important;
+  outline: none !important;
+  border-radius: 4px 0 0 4px !important;
+  min-width: 0 !important;
+  width: auto !important;
+  display: inline-block !important;
+}
+
+.toolbar button[type="submit"],
+.toolbar button[class*="search"],
+.toolbar .search-btn {
+  padding: 12px 24px !important;
+  background: #DB2B36 !important;
+  color: white !important;
+  border: none !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  border-radius: 0 4px 4px 0 !important;
+  transition: background 0.3s !important;
+  white-space: nowrap !important;
+  display: inline-block !important;
+  width: auto !important;
+  flex-shrink: 0 !important;
+}
+
+.toolbar button[type="submit"]:hover,
+.toolbar button[class*="search"]:hover,
+.toolbar .search-btn:hover {
+  background: #b91d19 !important;
+}
+
+/* 🔹 Кнопка корзины со счётчиком */
+.cart-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: #1a1a1a;
+  border: 2px solid #333;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.cart-badge:hover {
+  background: #333;
+  border-color: #DB2B36;
+}
+
+.cart-badge .cart-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.cart-badge .cart-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #DB2B36;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 50%;
+  min-width: 24px;
+  text-align: center;
+  border: 2px solid #000;
+  line-height: 1;
+}
+
+/* === Секция CLIP-поиска === */
+.clip-card {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.clip-card__title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #000;
+  margin: 0 0 20px;
+}
+
+/* 🔹 Контейнер с превью и кнопками - центрирование по вертикали */
+.clip-card__content {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  min-height: 160px;
+}
+
+.clip-card__preview {
+  width: 120px;
+  height: 120px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.clip-card__preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.clip-card__placeholder {
+  font-size: 12px;
+  color: #999;
+  text-align: center;
+  padding: 0 8px;
+}
+
+/* 🔹 Кнопки - в одну строку, по центру */
+.clip-card__actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.clip-card__btn-upload,
+.clip-card__btn-clear {
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+}
+
+.clip-card__btn-upload {
+  background: #FFC107;
+  color: #000;
+}
+
+.clip-card__btn-upload:hover {
+  background: #FFB300;
+}
+
+.clip-card__btn-upload:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.clip-card__btn-clear {
+  background: transparent;
+  color: #DB2B36;
+  border: 1px solid #DB2B36;
+}
+
+.clip-card__btn-clear:hover {
+  background: rgba(219, 43, 54, 0.05);
+}
+
+.clip-card__btn-clear:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Прогресс-бар */
+.clip-card__progress-wrapper {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.clip-card__progress {
+  height: 8px;
+  border-radius: 4px;
+  background: #e0e0e0;
+}
+
+.clip-card__progress .progress-bar {
+  background: #DB2B36;
+  border-radius: 4px;
+}
+
+.clip-card__file-input {
+  display: none;
+}
+
+/* === Сетка карточек === */
+.modes-grid,
+.catalog-grid--clip {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+/* === Карточка режима === */
+.mode-card,
+.clip-result-row {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.mode-card:hover,
+.clip-result-row:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.mode-card__image-wrapper,
+.clip-result-row .mode-card__image-wrapper {
+  position: relative;
+  height: 200px;
+  background: #f5f5f5;
+}
+
+.mode-card__image,
+.clip-result-row .mode-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mode-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: white;
+  border-radius: 4px;
+}
+
+.mode-badge.city { background: #1976d2; }
+.mode-badge.highway { background: #388e3c; }
+.mode-badge.mixed { background: #f57c00; }
+
+.mode-card__content,
+.clip-result-row .mode-card__content {
+  padding: 16px;
+}
+
+.mode-card__title,
+.clip-result-row .mode-card__title {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #000;
+}
+
+.mode-card__specs,
+.clip-result-row .mode-card__specs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.spec-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spec-icon {
+  font-size: 14px;
+}
+
+.spec-value {
+  font-weight: 600;
+  color: #000;
+}
+
+.mode-card__btn,
+.clip-result-row .mode-card__btn {
+  width: 100%;
+  padding: 12px;
+  background: #DB2B36;
+  color: white;
+  border: none;
+  border-radius: 0 0 8px 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.mode-card__btn:hover,
+.clip-result-row .mode-card__btn:hover {
+  background: #b91d19;
+}
+
+.mode-card__btn:disabled,
+.clip-result-row .mode-card__btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.similarity-value {
+  display: block;
+  text-align: center;
+  padding: 8px;
+  font-weight: 700;
+  color: #DB2B36;
+  background: #f9f9f9;
+  border-top: 1px solid #eee;
+  font-size: 14px;
+}
+
+/* 🔹 Блок сходства вместо кнопки */
+.mode-card__similarity {
+  margin-top: 12px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  text-align: center;
+  border-top: 1px solid #eee;
+}
+
+.similarity-label {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.similarity-value {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: #DB2B36;
+}
+
+/* 🔹 АДАПТИВНОСТЬ */
+@media (max-width: 1024px) {
+  .modes-grid,
+  .catalog-grid--clip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .toolbar .container {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .toolbar .search-form,
+  .toolbar form,
+  .toolbar div[class*="search"] {
+    width: 100%;
+    max-width: none;
+  }
+
+  .modes-grid,
+  .catalog-grid--clip {
+    grid-template-columns: 1fr;
+  }
+
+  .clip-card__content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .clip-card__actions {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .clip-card__title {
+    font-size: 18px;
+  }
+
+  .mode-card__title {
+    font-size: 14px;
+  }
+
+  .spec-value {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mode-card__image-wrapper {
+    height: 160px !important;
+  }
+
+  .mode-card__btn,
+  .clip-result-row .mode-card__btn {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .similarity-value {
+    font-size: 16px;
+  }
+
+  .clip-card__preview {
+    width: 100px;
+    height: 100px;
+  }
+
+  .clip-card__btn-upload,
+  .clip-card__btn-clear {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+}

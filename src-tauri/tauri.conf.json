@@ -1,0 +1,39 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "fuel-consumption-app",
+  "version": "0.1.0",
+  "identifier": "ru.mgtu.fuel-consumption",
+  "build": {
+    "beforeDevCommand": "npm run dev -- --host 0.0.0.0",
+    "beforeBuildCommand": "npm run build:tauri",
+    "devUrl": "http://localhost:3000",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "Расчёт экономии топлива - Круиз-контроль",
+        "width": 1100,
+        "height": 760,
+        "minWidth": 360,
+        "minHeight": 620,
+        "theme": "Light"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' http: https: data: blob:; img-src 'self' http: https: data: blob: http://localhost:9000; media-src 'self' http: https: data: blob:; connect-src 'self' http: https: ws: wss:; script-src 'self'; style-src 'self' 'unsafe-inline';"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}

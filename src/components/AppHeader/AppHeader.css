@@ -1,0 +1,195 @@
+/* src/components/AppHeader/AppHeader.css */
+
+/* === Шапка сайта === */
+.app-header {
+  background: #DB2B36;
+  color: white;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.app-header__wrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+/* === Логотип === */
+.app-header__logo {
+  display: flex;
+  align-items: center;
+}
+
+.app-header__logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.app-header__logo-img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+/* === Десктопное меню === */
+.app-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.app-header__link {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background 0.3s, color 0.3s;
+}
+
+.app-header__link:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.app-header__link--logout {
+  color: #ffebee;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.app-header__link--logout:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Активная ссылка (React Router) */
+.app-header__link.active {
+  background: rgba(255, 255, 255, 0.25);
+  font-weight: 700;
+}
+
+/* Имя пользователя */
+.app-header__username {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  opacity: 0.95;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* === Мобильный бургер === */
+.app-header__mobile-wrapper {
+  display: none; /* Скрыто на десктопе */
+  position: relative;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1001;
+}
+
+.app-header__burger {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 24px;
+  height: 20px;
+  justify-content: center;
+}
+
+.app-header__burger-line {
+  width: 100%;
+  height: 2px;
+  background: white;
+  border-radius: 2px;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+/* Анимация бургера при активном меню */
+.app-header__mobile-wrapper.active .app-header__burger-line:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.app-header__mobile-wrapper.active .app-header__burger-line:nth-child(2) {
+  opacity: 0;
+}
+.app-header__mobile-wrapper.active .app-header__burger-line:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* === Выпадающее мобильное меню === */
+.app-header__mobile-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #DB2B36;
+  border-radius: 0 0 8px 8px;
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 200px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+  /* Скрыто по умолчанию */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+}
+
+/* Показ меню при активном бургере */
+.app-header__mobile-wrapper.active .app-header__mobile-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.app-header__mobile-menu .app-header__link {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.app-header__mobile-menu .app-header__link:last-child {
+  border-bottom: none;
+}
+
+.app-header__username--mobile {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* === Адаптивность (мобильные устройства) === */
+@media (max-width: 768px) {
+  .app-header__nav {
+    display: none; /* Скрываем десктопное меню */
+  }
+
+  .app-header__mobile-wrapper {
+    display: flex; /* Показываем бургер */
+  }
+
+  .app-header__logo-img {
+    height: 32px;
+  }
+}
+
+/* === Отладка (можно удалить после настройки) === */
+/* .app-header { outline: 2px solid lime; } */
+/* .app-header__wrapper { outline: 2px dashed yellow; } */

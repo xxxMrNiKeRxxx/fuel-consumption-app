@@ -1,0 +1,62 @@
+/* BreadCrumbs.css — без голубого, только ваша цветовая палитра */
+
+.app-breadcrumbs {
+  background-color: #fafafa;
+  border-bottom: 1px solid #e8e8ec;
+  padding: 10px 40px 12px;
+  box-sizing: border-box;
+}
+
+.app-breadcrumbs__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.app-breadcrumbs__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-breadcrumbs__item:not(:last-child)::after {
+  content: "/";
+  color: #969ea2;
+  font-weight: 400;
+  user-select: none;
+}
+
+/* Заменяем голубой на тёмно-серый/чёрный */
+.app-breadcrumbs__link {
+  color: #2c353d; /* вместо #17adb7 */
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.app-breadcrumbs__link:hover {
+  color: #666;
+}
+
+.app-breadcrumbs__current {
+  color: #000;
+  font-weight: 500;
+}
+
+/* Для Bootstrap-совместимости (если используете <Breadcrumb>) */
+.breadcrumb-custom .breadcrumb-item a {
+  color: #2c353d;
+}
+
+.breadcrumb-custom .breadcrumb-item a:hover {
+  color: #666;
+}
+
+.breadcrumb-custom .breadcrumb-item.active {
+  color: #000;
+}

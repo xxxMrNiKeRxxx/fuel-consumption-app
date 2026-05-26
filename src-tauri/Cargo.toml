@@ -1,0 +1,19 @@
+[package]
+name = "fuel-consumption-app"
+version = "0.1.0"
+description = "Guest desktop shell for fuel consumption calculation with cruise control"
+authors = ["MGTU"]
+edition = "2021"
+
+[lib]
+# 🔹 Имя библиотеки должно совпадать с вызовом в main.rs
+name = "fuel_consumption_app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

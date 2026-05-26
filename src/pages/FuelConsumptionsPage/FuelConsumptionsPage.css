@@ -1,0 +1,159 @@
+.fuel-consumptions-page {
+  padding: 20px;
+  background: #f5f5f5;
+  min-height: calc(100vh - 100px);
+}
+
+.fuel-consumptions-page__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.fuel-consumptions-page__heading {
+  font-size: 24px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  color: #000;
+}
+
+.fuel-consumptions-page__filters {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.fuel-consumptions-page__filter-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  align-items: end;
+}
+
+.fuel-consumptions-page__fg {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fuel-consumptions-page__fg--grow {
+  grid-column: 1 / -1;
+}
+
+.fuel-consumptions-page__fg label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.fuel-consumptions-page__apply {
+  margin-top: 15px;
+  background: #DB2B36;
+  border: none;
+  padding: 8px 20px;
+}
+
+.fuel-consumptions-page__apply:hover {
+  background: #b91d19;
+}
+
+.fuel-consumptions-page__error {
+  background: #ffebee;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.fuel-consumptions-page__loader {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.fuel-consumptions-page__table-wrap {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.fuel-consumptions-page__table th {
+  background: #f0f0f0;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 13px;
+  color: #333;
+}
+
+.fuel-consumptions-page__table td {
+  vertical-align: middle;
+}
+
+.fuel-consumptions-page__linkish {
+  background: none;
+  border: none;
+  color: #DB2B36;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+}
+
+.fuel-consumptions-page__linkish:hover {
+  text-decoration: underline;
+}
+
+.fuel-consumptions-page__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.fuel-consumptions-page__empty {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 16px;
+}
+
+/* 🔹 АДАПТИВНОСТЬ */
+@media (max-width: 1024px) {
+  .fuel-consumptions-page__filter-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .fuel-consumptions-page__filter-row {
+    grid-template-columns: 1fr;
+  }
+
+  .fuel-consumptions-page__heading {
+    font-size: 20px;
+  }
+
+  .fuel-consumptions-page__table {
+    font-size: 12px;
+  }
+
+  .fuel-consumptions-page__table th,
+  .fuel-consumptions-page__table td {
+    padding: 10px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fuel-consumptions-page {
+    padding: 10px;
+  }
+
+  .fuel-consumptions-page__filters {
+    padding: 15px;
+  }
+
+  .fuel-consumptions-page__apply {
+    width: 100%;
+  }
+}

@@ -1,0 +1,89 @@
+/* === Контейнер поиска (строка) === */
+.search-form {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+  max-width: 500px;
+  margin: 0;
+  padding: 0;
+}
+
+/* === Поле ввода === */
+.search-form .search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 40px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px 0 0 4px;
+  font-size: 14px;
+  background: #fff;
+  color: #333;
+  outline: none;
+  box-shadow: none !important;
+  border-right: 1px solid #ccc;
+}
+
+.search-form .search-input::placeholder {
+  color: #999;
+  opacity: 1;
+}
+
+.search-form .search-input:focus {
+  background: #fff;
+  color: #333;
+  box-shadow: none !important;
+  border-color: #ccc;
+}
+
+/* === Кнопка "Найти" === */
+.search-form .search-btn {
+  height: 40px;
+  padding: 0 20px;
+  background: #DB2B36;
+  color: #fff;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin: 0;
+}
+
+.search-form .search-btn:hover {
+  background: #333;
+  color: #fff;
+}
+
+.search-form .search-btn:active,
+.search-form .search-btn:focus {
+  background: #DB2B36 !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* 🔹 АДАПТИВНОСТЬ */
+@media (max-width: 768px) {
+  .search-form {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-form .search-input {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .search-form .search-btn {
+    padding: 0 14px;
+    font-size: 13px;
+  }
+}

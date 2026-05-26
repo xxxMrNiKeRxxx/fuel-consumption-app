@@ -1,0 +1,81 @@
+/* === АДАПТИВНОСТЬ ДЛЯ ЛАБОРАТОРНОЙ 8 === */
+
+/* Планшеты */
+@media (max-width: 1024px) {
+    .modes-grid,
+    .fuel-consumptions-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Мобильные устройства */
+@media (max-width: 768px) {
+    /* Сетка карточек: 1 колонка */
+    .modes-grid,
+    .fuel-consumptions-grid,
+    .catalog-grid--clip {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    /* Шапка: элементы друг под другом */
+    .toolbar__inner,
+    .header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+    }
+
+    /* Поиск на всю ширину */
+    .text-search-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .text-search-wrapper input[type="text"],
+    .text-search-wrapper input[type="search"] {
+        width: 100% !important;
+    }
+
+    /* Блок мультимодального поиска */
+    .clip-search-content {
+        flex-direction: column !important;
+        text-align: center;
+    }
+
+    .clip-actions {
+        width: 100%;
+        align-items: center;
+    }
+
+    /* Уменьшение шрифтов */
+    .catalog-title {
+        font-size: 20px !important;
+    }
+
+    .mode-card__title {
+        font-size: 14px !important;
+    }
+
+    .spec-value {
+        font-size: 12px !important;
+    }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 480px) {
+    .mode-card__image-wrapper {
+        height: 160px !important;
+    }
+
+    button,
+    .btn {
+        font-size: 13px !important;
+        padding: 8px 12px !important;
+    }
+
+    .cart-count {
+        font-size: 10px !important;
+        padding: 2px 6px !important;
+    }
+}

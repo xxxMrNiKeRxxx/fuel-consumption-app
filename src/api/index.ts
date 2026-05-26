@@ -404,7 +404,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 }
 
 // ─── Экспорт и интерцепторы ─────────────────────────────────────────
-const baseURL = import.meta.env.VITE_API_BASE_URL ?? "/api";
+
+// 🔹 Умное определение baseURL
+const getBaseURL = () => {
+    // 1. Явно заданная переменная (приоритет)
+    if (import.meta.env.VITE_API_URL) {
+        return import.meta.env.VITE_API_URL;
+    }
+    // 2. Продакшен (GitHub Pages) -> локальный бэкенд
+    if (import.meta.env.PROD) {
+        return "http://localhost:8080";
+    }
+    // 3. Разработка -> прокси Vite
+    return "/api";
+};
+
+const baseURL = getBaseURL();
+
+// 🔹 Отладочный лог (удалите после проверки!)
+console.log("🚀 API BaseURL:", baseURL, "| PROD:", import.meta.env.PROD);
 
 export const api = new Api({ baseURL });
 

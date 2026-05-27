@@ -10,7 +10,6 @@ export interface ServicesFilters {
 
 interface ServicesState {
     filters: ServicesFilters;
-    // ... другие поля, если нужны
 }
 
 const initialState: ServicesState = {
@@ -32,8 +31,11 @@ export const servicesSlice = createSlice({
         resetServicesFilters: (state) => {
             state.filters = initialState.filters;
         },
+        setServiceFilterField: (state, action: PayloadAction<{ field: keyof ServicesFilters; value: string | number }>) => {
+            state.filters[action.payload.field] = action.payload.value as any;
+        },
     },
 });
 
-export const { setServicesFilters, resetServicesFilters } = servicesSlice.actions;
+export const { setServicesFilters, resetServicesFilters, setServiceFilterField } = servicesSlice.actions;
 export default servicesSlice.reducer;

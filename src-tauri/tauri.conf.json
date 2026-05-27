@@ -4,10 +4,10 @@
   "version": "0.1.0",
   "identifier": "ru.mgtu.fuel-consumption",
   "build": {
-    "beforeDevCommand": "npm run dev -- --host 0.0.0.0",
-    "beforeBuildCommand": "npm run build:tauri",
-    "devUrl": "http://localhost:3000",
-    "frontendDist": "../dist"
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev",
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:3000"
   },
   "app": {
     "withGlobalTauri": true,
@@ -22,7 +22,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self' http: https: data: blob:; img-src 'self' http: https: data: blob: http://localhost:9000; media-src 'self' http: https: data: blob:; connect-src 'self' http: https: ws: wss:; script-src 'self'; style-src 'self' 'unsafe-inline';"
+      "csp": "default-src 'self' http: https: data: blob:; img-src 'self' http: https: data: blob: http://10.0.0.146:8080; connect-src 'self' http://10.0.0.146:8080 http://localhost:8080; script-src 'self'; style-src 'self' 'unsafe-inline';"
     }
   },
   "bundle": {

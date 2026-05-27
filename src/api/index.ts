@@ -124,6 +124,14 @@ export class HttpClient<SecurityDataType = unknown> {
         this.instance = axios.create({
             ...axiosConfig,
             baseURL: axiosConfig.baseURL || "/api",
+
+            // 🔹 ДОБАВЬТЕ ЭТО: гарантируем сериализацию параметров
+            paramsSerializer: (params) => {
+                if (!params) return '';
+                return Object.keys(params)
+                    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+                    .join('&');
+            },
         });
         this.secure = secure;
         this.format = format;
@@ -248,14 +256,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 
     // 🚗 Modes
     modes = {
-        modesList: (query?: { Name?: string }, params: RequestParams = {}) =>
-            this.request<SerializerModeJSON[], Record<string, string>>({
+        modesList: (query?: { Name?: string } | { name?: string }, params: RequestParams = {}) => {
+            // 🔹 Нормализуем: если передан name (маленькая), преобразуем в Name
+            const normalizedQuery = query && 'name' in query && query.name
+                ? { Name: query.name }
+                : query;
+
+            return this.request<SerializerModeJSON[], Record<string, string>>({
                 path: `/modes`,
                 method: "GET",
-                query: query,
+                query: normalizedQuery,
                 format: "json",
                 ...params,
-            }),
+            });
+        },
 
         modesDetail: (id: number, params: RequestParams = {}) =>
             this.request<SerializerModeJSON, Record<string, string>>({
@@ -286,7 +300,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
             this.request<SerializerCartJSON, any>({
                 path: `/fuel-consumptions/cart`,
                 method: "GET",
-                secure: true,           // ✅ теперь эндпоинт защищён
+                secure: true,
                 format: "json",
                 ...params,
             }),
@@ -405,20 +419,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 
 // ─── Экспорт и интерцепторы ─────────────────────────────────────────
 
-// 🔹 Умное определение baseURL
+// 🔹 Умное определение baseURL (исправлено: без дублирования /api)
 const getBaseURL = () => {
     // 1. Явно заданная переменная (приоритет)
     if (import.meta.env.VITE_API_URL) {
-        return import.meta.env.VITE_API_URL;
+        const url = import.meta.env.VITE_API_URL;
+        return url.endsWith('/api') ? url : `${url}/api`;
     }
-    // 2. Продакшен (GitHub Pages) -> локальный бэкенд
+    // 2. Продакшен (GitHub Pages) -> локальный бэкенд с /api
     if (import.meta.env.PROD) {
-        return "http://localhost:8080";
+        return "http://localhost:8080/api";
     }
-    // 3. Разработка -> прокси Vite
+    // 3. Разработка -> прокси Vite (относительный путь)
     return "/api";
 };
 
+// 🔹 Просто используем результат функции (без повторного добавления /api!)
 const baseURL = getBaseURL();
 
 // 🔹 Отладочный лог (удалите после проверки!)
@@ -426,8 +442,32 @@ console.log("🚀 API BaseURL:", baseURL, "| PROD:", import.meta.env.PROD);
 
 export const api = new Api({ baseURL });
 
-// 🔒 Добавление токена
+// 🔹 Отладочный интерцептор (показывает ВСЕ запросы)
 api.instance.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    // 🔹 ЛОГИРОВАНИЕ (удалите после отладки!)
+    console.log("🔍 [AXIOS REQUEST]", {
+        url: config.url,
+        baseURL: config.baseURL,
+        fullURL: `${config.baseURL}${config.url}`,
+        method: config.method,
+        path: config.url,
+    });
+
+    return config;
+});
+
+// 🔹 Отладочный интерцептор — покажет ВСЕ запросы через api клиент
+api.instance.interceptors.request.use((config) => {
+    console.log("🔍 [API CLIENT REQUEST]", {
+        url: config.url,
+        baseURL: config.baseURL,
+        fullURL: `${config.baseURL}${config.url}`,
+    });
     const token = localStorage.getItem("token");
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -435,9 +475,9 @@ api.instance.interceptors.request.use((config) => {
     return config;
 });
 
-// 🔓 Сохранение токена при логине
 api.instance.interceptors.response.use(
     (response) => {
+        console.log("✅ [API CLIENT RESPONSE]", response.config.url, response.status);
         const data = response.data;
         const token = data?.access_token ?? data?.token;
         if (token) {
@@ -446,6 +486,14 @@ api.instance.interceptors.response.use(
         return response;
     },
     (error) => {
+        if (error.config) {
+            console.error("❌ [API CLIENT ERROR]", {
+                url: error.config.url,
+                baseURL: error.config.baseURL,
+                fullURL: `${error.config.baseURL}${error.config.url}`,
+                status: error.response?.status,
+            });
+        }
         if (error.response?.status === 401) {
             localStorage.removeItem("token");
         }

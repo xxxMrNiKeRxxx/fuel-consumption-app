@@ -16,6 +16,10 @@ import { DrivingModeS_MOCK } from "../../modules/mock";
 import { useModeImageSearch } from "../../hooks/useModeImageSearch";
 import "./ModesPage.css";
 
+// 🔹 Импортируем Redux хуки и экшены
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { setServicesFilters } from "../../store/slices/modesSlice";
+
 // ✅ Хелпер для резолва путей к изображениям
 function resolveThumb(key: string): string {
   if (!key) return fallbackImageUrl();
@@ -30,7 +34,7 @@ function resolveThumb(key: string): string {
   return objectUrlFromKey(key);
 }
 
-// 🔹 Компонент карточки для результатов CLIP-поиска (с процентом сходства)
+// 🔹 Компонент карточки для результатов мультимодального поиска
 interface ClipModeCardProps {
   mode: DrivingMode;
   similarity: number;
@@ -79,7 +83,7 @@ function ClipModeCard({ mode, similarity }: ClipModeCardProps) {
               <span className="spec-value">{mode.base_consumption} л/100км</span>
             </div>
             <div className="spec-item">
-              <span className="spec-icon">💰</span>
+              <span className="spec-icon"></span>
               <span className="spec-value">Экономия: {mode.economy_percent}%</span>
             </div>
           </div>
@@ -88,7 +92,6 @@ function ClipModeCard({ mode, similarity }: ClipModeCardProps) {
               <p className="mode-card__description">{mode.description}</p>
           )}
 
-          {/* 🔹 Вместо кнопки — процент сходства */}
           <div className="mode-card__similarity">
             <span className="similarity-label">Сходство:</span>
             <span className="similarity-value">{(similarity * 100).toFixed(1)}%</span>
@@ -99,36 +102,46 @@ function ClipModeCard({ mode, similarity }: ClipModeCardProps) {
 }
 
 export default function ModesPage() {
+  const dispatch = useAppDispatch();
+
+  // 🔹 Читаем поиск ПРЯМО из Redux (Single Source of Truth)
+  // PersistGate гарантирует, что здесь уже будет восстановленное значение
+  const searchName = useAppSelector((state) => state.services.filters.search);
+
   // === Состояния данных ===
   const [clipSourceModes, setClipSourceModes] = useState<DrivingMode[]>([]);
   const [displayModes, setDisplayModes] = useState<DrivingMode[]>([]);
-  const [searchName, setSearchName] = useState("");
   const [loading, setLoading] = useState(false);
   const [useMock, setUseMock] = useState(false);
 
-  // === Состояния CLIP-поиска ===
+  // === Состояния мультимодального поиска ===
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [clipSessionActive, setClipSessionActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // === Загрузка данных (бэкенд → fallback на mock) ===
+  // 🔹 Обработчик изменения поиска: просто обновляет Redux
+  const handleSearchNameChange = (value: string) => {
+    dispatch(setServicesFilters({ search: value }));
+  };
+
+  // === Загрузка данных (учитывает сохранённый фильтр!) ===
   useEffect(() => {
     let cancelled = false;
 
     const run = async () => {
-      if (useMock) {
-        if (!cancelled) {
-          setClipSourceModes(DrivingModeS_MOCK);
-          setDisplayModes(DrivingModeS_MOCK);
-        }
-        return;
-      }
+      setLoading(true);
       try {
-        const data = await listDrivingModes();
+        // 🔹 Если в Redux есть сохранённый запрос — грузим отфильтрованный список сразу
+        const data = searchName
+            ? await listDrivingModes({ name: searchName })
+            : await listDrivingModes();
+
         if (cancelled) return;
+
         if (data.length > 0) {
           setClipSourceModes(data);
           setDisplayModes(data);
+          setUseMock(false);
         } else {
           setClipSourceModes(DrivingModeS_MOCK);
           setDisplayModes(DrivingModeS_MOCK);
@@ -139,16 +152,18 @@ export default function ModesPage() {
         setClipSourceModes(DrivingModeS_MOCK);
         setDisplayModes(DrivingModeS_MOCK);
         setUseMock(true);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     };
 
-    void run();
+    run();
     return () => {
       cancelled = true;
     };
-  }, [useMock]);
+  }, []); // Пустой массив: запускается 1 раз при монтировании (после гидратации Redux)
 
-  // === Подготовка данных для CLIP: { id: mode_id, description: short_description_en } ===
+  // === Подготовка данных для мультимодального поиска ===
   const clipItems = useMemo(
       () =>
           clipSourceModes.map((mode) => ({
@@ -158,7 +173,7 @@ export default function ModesPage() {
       [clipSourceModes]
   );
 
-  // === Подключение хука поиска ===
+  // === Подключение хука мультимодального поиска ===
   const {
     items: clipProcessed,
     ready: clipReady,
@@ -176,28 +191,28 @@ export default function ModesPage() {
     return m;
   }, [clipSourceModes]);
 
-  // === Обработчик текстового поиска ===
+  // === Обработчик текстового поиска (по кнопке "Найти") ===
   const handleSearch = async () => {
+    console.log("🔍 [handleSearch] Ищу:", searchName);
     setLoading(true);
     try {
       const filtered = await listDrivingModes({ name: searchName });
+      console.log("✅ [handleSearch] Найдено:", filtered.length, "режимов");
+
       if (filtered.length > 0) {
+        setClipSourceModes(filtered);
         setDisplayModes(filtered);
         setUseMock(false);
       } else {
-        if (useMock) {
-          const filteredMock = DrivingModeS_MOCK.filter((mode) =>
-              mode.mode_name.toLowerCase().includes(searchName.toLowerCase())
-          );
-          setDisplayModes(filteredMock);
-        } else {
-          setDisplayModes([]);
-        }
+        setClipSourceModes([]);
+        setDisplayModes([]);
       }
-    } catch {
+    } catch (error) {
+      console.error("❌ [handleSearch] Ошибка:", error);
       const filteredMock = DrivingModeS_MOCK.filter((mode) =>
-          mode.mode_name.toLowerCase().includes(searchName.toLowerCase())
+          mode.mode_name?.toLowerCase().includes(searchName.toLowerCase())
       );
+      setClipSourceModes(filteredMock);
       setDisplayModes(filteredMock);
       setUseMock(true);
     } finally {
@@ -238,7 +253,7 @@ export default function ModesPage() {
       clipItems.length === 0 || (clipSessionActive && !clipReady);
   const canResetImage = Boolean(selectedImage);
 
-  // === Результаты поиска по изображению (полные объекты DrivingMode + similarity) ===
+  // === Результаты поиска по изображению ===
   const foundModesWithSimilarity = useMemo(() => {
     if (!imageSearchActive) return [];
     return clipProcessed
@@ -247,17 +262,19 @@ export default function ModesPage() {
           mode: modeById.get(item.id),
           similarity: item.score,
         }))
-        .filter((item): item is { mode: DrivingMode; similarity: number } => item.mode != null);
+        .filter(
+            (item): item is { mode: DrivingMode; similarity: number } =>
+                item.mode != null
+        );
   }, [clipProcessed, imageSearchActive, modeById]);
 
   return (
       <div className="modes-page">
-        {/* === Чёрная панель с поиском и заявкой === */}
         <div className="toolbar">
           <div className="container">
             <Search
                 query={searchName}
-                onQueryChange={setSearchName}
+                onQueryChange={handleSearchNameChange}
                 onSearch={handleSearch}
             />
             <CartRow />
@@ -266,7 +283,6 @@ export default function ModesPage() {
 
         <div className="space">
           <main className="catalog-main">
-            {/* === Секция CLIP-поиска === */}
             <section className="clip-card" aria-labelledby="clip-search-title">
               <h2 id="clip-search-title" className="clip-card__title">
                 Поиск режима по изображению
@@ -302,7 +318,6 @@ export default function ModesPage() {
                       )}
                     </div>
 
-                    {/* 🔹 Кнопки в одну строку */}
                     <div className="clip-card__actions">
                       <Button
                           className="clip-card__btn-upload"
@@ -337,20 +352,21 @@ export default function ModesPage() {
               )}
             </section>
 
-            {/* === Заголовок каталога === */}
             <div className="catalog-header">
               <h2 className="catalog-title">КАТАЛОГ РЕЖИМОВ ДВИЖЕНИЯ</h2>
             </div>
 
-            {/* === Рендер результатов === */}
             {loading ? (
-                <div>Загрузка...</div>
+                <div className="loading">Загрузка...</div>
             ) : imageSearchActive ? (
-                // 🔹 Режим CLIP-поиска: показываем найденные режимы с процентом сходства
                 <div className="modes-grid">
                   {foundModesWithSimilarity.length > 0 ? (
                       foundModesWithSimilarity.map(({ mode, similarity }) => (
-                          <ClipModeCard key={mode.mode_id} mode={mode} similarity={similarity} />
+                          <ClipModeCard
+                              key={mode.mode_id}
+                              mode={mode}
+                              similarity={similarity}
+                          />
                       ))
                   ) : (
                       <div className="modes-page__empty">
@@ -359,10 +375,11 @@ export default function ModesPage() {
                   )}
                 </div>
             ) : (
-                // 🔹 Обычный режим: сетка карточек с фильтрацией
                 <div className="modes-grid">
                   {displayModes.length > 0 ? (
-                      displayModes.map((mode) => <ModeCard key={mode.mode_id} mode={mode} />)
+                      displayModes.map((mode) => (
+                          <ModeCard key={mode.mode_id} mode={mode} />
+                      ))
                   ) : (
                       <div className="modes-page__empty">
                         {searchName

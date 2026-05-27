@@ -29,38 +29,37 @@ export default defineConfig(({ mode }) => {
       react(),
       // 🔹 PWA плагин для Fuel Consumption App
       // vite.config.ts
+      // vite.config.ts
       VitePWA({
         registerType: "autoUpdate",
-        includeAssets: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"],
+        includeAssets: ["favicon.ico", "pwa-192x192.png", "pwa-512x512.png"],
         manifest: {
           name: "Расчёт экономии топлива - Круиз-контроль",
           short_name: "CruiseControl",
-          description: "Приложение для расчёта экономии топлива при использовании круиз-контроля",
+          description: "Приложение для расчёта экономии топлива",
           theme_color: "#DB2B36",
           background_color: "#ffffff",
+          start_url: "/fuel-consumption-app/",  // ← С слэшем в начале и конце!
+          scope: "/fuel-consumption-app/",
           display: "standalone",
-          start_url: "/",
           orientation: "portrait-primary",
-
-          // 🔹 ИСПРАВЛЕНО: убран "maskable", добавлены скриншоты
-          // vite.config.ts
+          // 🔹 Пути БЕЗ начального слэша!
           icons: [
             {
-              src: "/pwa-192x192.png",
+              src: "pwa-192x192.png",  // ← Без слэша!
               sizes: "192x192",
               type: "image/png",
-              purpose: "any",  // ← Только "any"
+              purpose: "any maskable",
             },
             {
-              src: "/pwa-512x512.png",
+              src: "pwa-512x512.png",  // ← Без слэша!
               sizes: "512x512",
               type: "image/png",
-              purpose: "any",  // ← Только "any"
+              purpose: "any maskable",
             },
           ],
-
-
         },
+
 
         // 🔹 Workbox для кэширования
         workbox: {

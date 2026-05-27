@@ -1,50 +1,40 @@
 // src/modules/modeApi.ts
+import { api } from "../api";
 
 const MINIO_PUBLIC_BASE =
     (import.meta.env.VITE_MINIO_PUBLIC_BASE?.replace(/\/$/, "") as string | undefined) ??
-    "http://localhost:9000/services";  // заменён bucket
+    "http://localhost:9000/services";
 
 // Статусы для заявки на расчёт
 export type FuelConsumptionStatus = 'черновик' | 'удалён' | 'сформирован' | 'завершён' | 'отклонён';
 
 // Интерфейс для режима движения
-// src/modules/modeApi.ts
 export interface DrivingMode {
   mode_id?: number;
-
-  // ✅ Поддержка разных вариантов названия
   mode_name?: string;
-  name?: string;              // альтернатива
-  modeName?: string;          // camelCase
-  mode_title?: string;        // snake_case с underscore
-
+  name?: string;
+  modeName?: string;
+  mode_title?: string;
   description?: string;
   image_key?: string;
   video_key?: string;
-
-  // ✅ Расход топлива
   base_consumption?: number;
-  consumption?: number;       // альтернатива
-  baseConsumption?: number;   // camelCase
-
-  // ✅ Процент экономии
+  consumption?: number;
+  baseConsumption?: number;
   economy_percent?: number;
-  economy?: number;           // альтернатива
+  economy?: number;
   savings_percent?: number;
-  economyPercent?: number;    // camelCase
-
-  // ✅ Цена/экономия в рублях
+  economyPercent?: number;
   price?: number;
-  cost?: number;              // альтернатива
+  cost?: number;
   savings?: number;
   price_rub?: number;
-
   driving_type?: 'city' | 'highway' | 'mixed';
   short_description_en?: string;
   is_active?: boolean;
 }
 
-// ✅ Функция для CLIP (остаётся, но с новым названием)
+// Функция для CLIP
 export function DrivingModeClipDescription(s: DrivingMode): string {
   const en = s.short_description_en?.trim();
   if (en) return en;
@@ -52,39 +42,38 @@ export function DrivingModeClipDescription(s: DrivingMode): string {
 }
 
 // Интерфейс для заявки на расчёт топлива
-export interface FuelConsumption { // заменено с TirePressure
-  consumption_id: number; // заменено с tire_pressure_id
+export interface FuelConsumption {
+  consumption_id: number;
   status: FuelConsumptionStatus;
-  created_at: string; // заменено с date_create
-  completed_at?: string | null; // заменено с date_completed
-  creator_login: string; // заменено с creator_id
-  moderator_login?: string | null; // заменено с moderator_id
-  fuel_price: number; // цена топлива
-  total_saved?: number; // общая экономия
-  origin: string; // начальный пункт
-  destination: string; // конечный пункт
+  created_at: string;
+  completed_at?: string | null;
+  creator_login: string;
+  moderator_login?: string | null;
+  fuel_price: number;
+  total_saved?: number;
+  origin: string;
+  destination: string;
 }
 
-// Интерфейс для записи в заявке (режим + маршрут)
-export interface FuelConsumptionMode { // заменено с TirePressureEntry
+// Интерфейс для записи в заявке
+export interface FuelConsumptionMode {
   id: number;
-  consumption_id: number; // заменено с tire_pressure_id
-  mode_id: number; // заменено с tire_id
-  route_distance: number; // расстояние маршрута
-  fuel_saved: number; // экономия топлива
+  consumption_id: number;
+  mode_id: number;
+  route_distance: number;
+  fuel_saved: number;
 }
 
 // Интерфейс для корзины/черновика заявки
-export interface FuelConsumptionCart { // заменено с TirePressureCart
-  consumption_id?: number; // заменено с tire_pressure_id
-  modes_count: number; // заменено с tires_count
-  // можно добавить другие поля по необходимости
+export interface FuelConsumptionCart {
+  consumption_id?: number;
+  modes_count: number;
 }
 
 // Интерфейс для деталей заявки
-export interface FuelConsumptionDetailResponse { // заменено с TirePressureDetailResponse
+export interface FuelConsumptionDetailResponse {
   consumption: FuelConsumption;
-  modes: FuelConsumptionMode[]; // заменено с entries
+  modes: FuelConsumptionMode[];
 }
 
 // Функции для работы с URL
@@ -116,88 +105,69 @@ export function resolveMediaUrl(key: string): string {
   return objectUrlFromKey(key);
 }
 
-// ✅ API-функции (заменены на работу с FuelConsumption и DrivingMode)
-export async function getFuelConsumptionCart(): Promise<FuelConsumptionCart> {
-  try {
-    const res = await fetch("/api/fuel_consumption/cart", { // изменён URL
-      headers: { Accept: "application/json" },
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
-  } catch {
-    return { consumption_id: undefined, modes_count: 0 };
-  }
-}
+// 🔹 API-функции (исправлены: используют api клиент вместо fetch)
 
-export async function getFuelConsumption(
-    id: number,
-): Promise<FuelConsumptionDetailResponse | null> {
-  const headers: Record<string, string> = { Accept: "application/json" };
-  const token = localStorage.getItem("token");
-  if (token) headers["Authorization"] = `Bearer ${token}`;
+// ✅ Уже было правильно:
+export async function listDrivingModes(params?: { name?: string }): Promise<DrivingMode[]> {
   try {
-    const res = await fetch(`/api/fuel_consumption/${id}`, { headers }); // изменён URL
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
+    // 🔹 Преобразуем name (маленькая) → Name (заглавная) для бэкенда
+    const query = params?.name ? { Name: params.name } : undefined;
 
-export async function listDrivingModes(params?: { name?: string }): Promise<DrivingMode[]> { // изменено на listDrivingModes
-  try {
-    let path = "/api/modes"; // изменён URL
-    if (params?.name) {
-      const q = new URLSearchParams();
-      q.append("Name", params.name); // изменён параметр поиска
-      path += `?${q.toString()}`;
-    }
-    const res = await fetch(path, { headers: { Accept: "application/json" } });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
+    console.log("🔍 [listDrivingModes] Отправляю query:", query); // ← Лог для отладки
+
+    const response = await api.modes.modesList(query);
+    return response.data;
   } catch {
     return [];
   }
 }
 
-export async function getDrivingMode(id: number): Promise<DrivingMode | null> { // изменено на getDrivingMode
+// 🔹 Исправлено: getFuelConsumptionCart
+export async function getFuelConsumptionCart(): Promise<FuelConsumptionCart> {
   try {
-    const res = await fetch(`/api/modes/${id}`, { // изменён URL
-      headers: { Accept: "application/json" },
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
+    const response = await api.fuelConsumptions.fuelConsumptionCartList();
+    return response.data;
+  } catch {
+    return { consumption_id: undefined, modes_count: 0 };
+  }
+}
+
+// 🔹 Исправлено: getFuelConsumption
+export async function getFuelConsumption(
+    id: number,
+): Promise<FuelConsumptionDetailResponse | null> {
+  try {
+    const response = await api.fuelConsumptions.fuelConsumptionsDetail(id);
+    return response.data;
   } catch {
     return null;
   }
 }
 
-// Функция для добавления режима в заявку
-export async function addModeToApplication(
-    modeId: number, // изменено с tireId
-): Promise<{ ok: true } | { ok: false; status: number; message?: string }> {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return { ok: false, status: 401, message: "Войдите в систему, чтобы добавить режим в заявку." };
-  }
+// 🔹 Исправлено: getDrivingMode
+export async function getDrivingMode(id: number): Promise<DrivingMode | null> {
   try {
-    const res = await fetch(`/api/fuel_consumption_mode/add/${modeId}`, { // изменён URL
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (res.ok || res.status === 201) return { ok: true };
-    let message: string | undefined;
-    try {
-      const j = (await res.json()) as { error?: string; message?: string };
-      message = j.error ?? j.message;
-    } catch {
-      message = await res.text();
-    }
-    return { ok: false, status: res.status, message: message || `HTTP ${res.status}` };
+    const response = await api.modes.modesDetail(id);
+    return response.data;
   } catch {
-    return { ok: false, status: 0, message: "Не удалось выполнить запрос." };
+    return null;
+  }
+}
+
+// 🔹 Исправлено: addModeToApplication
+export async function addModeToApplication(
+    modeId: number,
+): Promise<{ ok: true } | { ok: false; status: number; message?: string }> {
+  try {
+    await api.fuelModeEntries.add(modeId);
+    return { ok: true };
+  } catch (error: any) {
+    const status = error?.response?.status || 0;
+    const message = error?.response?.data?.error || error?.message || "Не удалось выполнить запрос";
+
+    if (status === 401) {
+      return { ok: false, status: 401, message: "Войдите в систему, чтобы добавить режим в заявку." };
+    }
+    return { ok: false, status, message: message || `HTTP ${status}` };
   }
 }

@@ -1,15 +1,18 @@
-// src/main.tsx (или index.tsx)
+// src/main.tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Provider } from "react-redux"; // ✅ Импорт Provider из react-redux
-import { store } from "./store";        // ✅ Путь к вашему store (проверьте точное имя экспорта)
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react"; // 🔹 Импортируем
+import { store, persistor } from "./store"; // 🔹 Импортируем persistor
 import App from "./App";
-import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
-        <Provider store={store}> {/* ✅ Оборачиваем всё приложение */}
-            <App />
+        <Provider store={store}>
+            {/* 🔹 PersistGate ждет загрузки состояния из localStorage */}
+            <PersistGate loading={null} persistor={persistor}>
+                <App />
+            </PersistGate>
         </Provider>
-    </React.StrictMode>,
+    </React.StrictMode>
 );
